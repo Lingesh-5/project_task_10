@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+</head>
+
+<body>
+    <script>
+        getAllEmployee();
+        function createEmployee() {
+            const id = document.getElementById("employeeId").value;
+            const name = document.getElementById("employeeName").value;
+            const email = document.getElementById("employeeEmail").value;
+            const location = document.getElementById("employeeLocation").value;
+
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: JSON.stringify({
+                    id: id,
+                    name: name,
+                    email: email,
+                    location: location,
+                }),
+                redirect: "follow",
+            };
+
+            fetch("http://localhost:8080/api/employee", requestOptions)
+                .then((response) => response.text())
+                .then((result) => {
+                    alert(result);
+                    getAllEmployee();
+                })
+                .catch((error) => console.error(error));
+        }
+        function getAllEmployee() {
+            fetch("http://localhost:8080/api/employee/displayAll")
+                .then((response) => response.json())
+                .then((result) => loadData(result))
+                .catch((error) => console.error(error));
+            function loadData(employee) {
+                const tbody = document.getElementById("content");
+
+                tbody.innerHTML = '';
+                employee.forEach(employee => {
+                    tbody.innerHTML += `<tr>
+                <td>${employee.id}</td>
+                <td>${employee.name}</td>
+                <td>${employee.email}</td>
+                <td>${employee.location}</td>
+                </tr>`
+                });
+            }
+        }
+        function getEmployee() {
+            const id = document.getElementById("employeeIdValue").value;
+
+            fetch(`http://localhost:8080/api/employee/display/${id}`)
+                .then((response) => response.json())
+                .then((result) => loadData(result))
+                .catch((error) => console.error(error));
+            function loadData(employee) {
+                const tbody = document.getElementById("content");
+                tbody.innerHTML = `<tr>
+                        <td>${employee.body.id}</td>
+                        <td>${employee.body.name}</td>
+                        <td>${employee.body.email}</td>
+                        <td>${employee.body.location}</td>
+                        </tr>`
+            }
+
+        }
+    </script>
+    <div class="d-flex flex-column w-50 p-5">
+        <div class="display-2">Employee Details</div><br />
+        <label for="id" class="form-label">Employee ID:</label>
+        <input class="form-control" type="text" placeholder="Enter Employee ID" id="employeeId" /><br />
+        <label for="Name" class="form-label">Name:</label>
+        <input class="form-control" type="text" placeholder="Enter Name" id="employeeName" /><br />
+        <label for="Email" class="form-label">Email:</label>
+        <input class="form-control" type="email" placeholder="Enter Email" id="employeeEmail" /><br />
+        <label for="Location" class="form-label">Location:</label>
+        <input class="form-control" type="text" placeholder="Enter Location" id="employeeLocation" /><br />
+        <input class="btn btn-primary" type="submit" onclick="createEmployee()" />
+    </div>
+    <hr />
+    <div class="w-50 p-5">
+        <div class="d-flex flex-row">
+            <input class="form-control" type="text" placeholder="Enter ID" id="employeeIdValue" />
+            <input class="btn btn-outline-primary" type="button" value="Show" onclick="getEmployee()" />
+        </div>
+        <br />
+        <table class="table table-success">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody id="content">
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
